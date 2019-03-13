@@ -8,6 +8,7 @@ from flask_jwt_extended import (
 from libs.strings import gettext
 from models.user import UserModel
 from schemas.user import UserSchema
+from security import encrypt_password, check_encrypted_password
 
 user_schema = UserSchema()
 
@@ -21,6 +22,9 @@ class UserRegister(Resource):
         if UserModel.find_by_username(user.username):
             return {"message": gettext("user_username_exists")}, 400
 
+        unencrypted_pwd = user.password
+        encrypted_pwd = encrypt_password(unencrypted_pwd)
+        user.password = encrypted_pwd
         user.save_to_db()
 
         return {"message": gettext("user_registered")}, 201
@@ -58,7 +62,7 @@ class UserLogin(Resource):
 
         user = UserModel.find_by_username(user_data.username)
 
-        if user and safe_str_cmp(user.password, user_data.password):
+        if user and safe_str_cmp(user.password, check_encrypted_password(user_data.password)):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
             return {"access_token": access_token, "refresh_token": refresh_token}, 200
