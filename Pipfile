@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 "psycopg2" = "*"
+passlib = "*"
 Flask = "*"
 Flask-JWT-Extended = "*"
 Flask-RESTful = "*"
