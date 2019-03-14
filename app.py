@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from marshmallow import ValidationError
+from flask_migrate import Migrate
 from dotenv import load_dotenv
 
 from db import db
@@ -22,6 +23,7 @@ app.config["PROPAGATE_EXCEPTIONS"] = True
 app.secret_key = "jose"
 api = Api(app)
 jwt = JWTManager(app)
+migrate = Migrate(app, db)
 
 
 @app.before_first_request
